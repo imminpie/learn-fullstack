@@ -1,0 +1,13 @@
+server:
+  port: 4000
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/board?serverTimeZone=UTC&characterEncoding=UTF-8
+    username: root
+    password: 1111
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 110MB
