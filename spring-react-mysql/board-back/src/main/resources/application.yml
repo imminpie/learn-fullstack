@@ -11,3 +11,9 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 110MB
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+secret-key: S3cr3tK3yS3cr3tK3yS3cr3tK3yS3cr3tK3yS3cr3tK3y
