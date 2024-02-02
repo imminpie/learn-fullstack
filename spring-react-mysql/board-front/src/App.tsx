@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import './App.css';
-import Footer from 'layouts/Footer';
+import { RouterProvider } from 'react-router-dom';
+import root from 'router/root';
 
 function App() {
+  const Loading = <div>Loading...</div>;
   return (
-    <>
-      <Footer />
-    </>
+    <Suspense fallback={Loading}>
+      <RouterProvider router={root} />
+    </Suspense>
   );
 }
 
