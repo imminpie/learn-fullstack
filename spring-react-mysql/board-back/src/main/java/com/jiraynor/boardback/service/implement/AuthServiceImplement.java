@@ -66,11 +66,14 @@ public class AuthServiceImplement implements AuthService {
     @Override
     public ResponseEntity<? super SignInResponseDto> signIn(SignInRequestDto dto) {
 
+        System.out.println("dto = " + dto.getPassword());
+
         String token = null;
 
         try {
             String email = dto.getEmail();
             UserEntity userEntity = userRepository.findByEmail(email);
+            if (userEntity == null) return SignInResponseDto.signInFailed();
 
             String password = dto.getPassword(); // 사용자가 입력한 비밀번호
             String encodedPassword = userEntity.getPassword();  // 데이터베이스에 저장된 비밀번호
