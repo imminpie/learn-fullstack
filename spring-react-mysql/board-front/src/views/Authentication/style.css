@@ -130,3 +130,37 @@
   cursor: pointer;
   font-weight: 600;
 }
+
+.auth-consent-box {
+  display: flex;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.auth-check-box {
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+}
+
+.auth-consent-title {
+  color: rgba(0, 0, 0, 0.7);
+  font-style: 14px;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+.auth-consent-title-error {
+  color: rgba(255, 0, 0, 0.7);
+  font-style: 14px;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+.auth-consent-link {
+  color: #000;
+  font-style: 14px;
+  font-weight: 500;
+  line-height: 140%;
+  margin-left: 4px;
+}
