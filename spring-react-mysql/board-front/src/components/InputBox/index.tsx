@@ -1,4 +1,4 @@
-import { forwardRef, KeyboardEvent, Dispatch, SetStateAction, ChangeEvent } from 'react';
+import { forwardRef, KeyboardEvent, ChangeEvent } from 'react';
 import './style.css';
 
 interface Props {
@@ -6,22 +6,17 @@ interface Props {
   type: 'text' | 'password'; // input type 속성
   placeholder: string;
   value: string;
-  setValue: Dispatch<SetStateAction<string>>;
   error: boolean;
-  icon?: string;
+  icon?: 'eye-light-off-icon' | 'eye-light-on-icon' | 'expand-right-light-icon';
   message?: string;
   onButtonClick?: () => void;
   onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const InputBox = forwardRef<HTMLInputElement, Props>((props: Props, ref) => {
   const { label, type, placeholder, value, error, icon, message } = props;
-  const { setValue, onButtonClick, onKeyDown } = props;
-
-  const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setValue(value);
-  };
+  const { onChange, onButtonClick, onKeyDown } = props;
 
   const onKeyDownHandler = (e: KeyboardEvent<HTMLInputElement>) => {
     if (!onKeyDown) return;
@@ -38,7 +33,7 @@ const InputBox = forwardRef<HTMLInputElement, Props>((props: Props, ref) => {
           type={type}
           placeholder={placeholder}
           value={value}
-          onChange={onChangeHandler}
+          onChange={onChange}
           onKeyDown={onKeyDownHandler}
         />
         {onButtonClick !== undefined && (
