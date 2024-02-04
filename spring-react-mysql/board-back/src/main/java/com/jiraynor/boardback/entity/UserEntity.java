@@ -1,5 +1,6 @@
 package com.jiraynor.boardback.entity;
 
+import com.jiraynor.boardback.dto.request.auth.SignUpRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -38,5 +39,16 @@ public class UserEntity {
 
     @Column
     private boolean agreedPersonal;
+
+    // DTO → Entity
+    public UserEntity(SignUpRequestDto dto) {
+        this.email = dto.getEmail();
+        this.password = dto.getPassword();
+        this.nickname = dto.getNickname();
+        this.telNumber = dto.getTelNumber();
+        this.address = dto.getAddress();
+        this.addressDetail = dto.getAddressDetail();
+        this.agreedPersonal = dto.getAgreedPersonal();
+    }
 
 }
