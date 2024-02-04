@@ -1,6 +1,8 @@
 package com.jiraynor.boardback.controller;
 
+import com.jiraynor.boardback.dto.request.auth.SignInRequestDto;
 import com.jiraynor.boardback.dto.request.auth.SignUpRequestDto;
+import com.jiraynor.boardback.dto.response.auth.SignInResponseDto;
 import com.jiraynor.boardback.dto.response.auth.SignUpResponseDto;
 import com.jiraynor.boardback.service.AuthService;
 import jakarta.validation.Valid;
@@ -25,6 +27,12 @@ public class AuthController {
          * SignUpRequestDto 클래스에 정의된 제약 조건에 위배되는 경우 예외를 발생시킨다.
          */
         ResponseEntity<? super SignUpResponseDto> response = authService.signUp(dto);
+        return response;
+    }
+
+    @PostMapping("/sign-in")
+    public ResponseEntity<? super SignInResponseDto> signIn(@RequestBody @Valid SignInRequestDto dto) {
+        ResponseEntity<? super SignInResponseDto> response = authService.signIn(dto);
         return response;
     }
 

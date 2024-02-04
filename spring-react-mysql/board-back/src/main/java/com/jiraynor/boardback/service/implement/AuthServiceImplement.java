@@ -1,9 +1,12 @@
 package com.jiraynor.boardback.service.implement;
 
+import com.jiraynor.boardback.dto.request.auth.SignInRequestDto;
 import com.jiraynor.boardback.dto.request.auth.SignUpRequestDto;
 import com.jiraynor.boardback.dto.response.ResponseDto;
+import com.jiraynor.boardback.dto.response.auth.SignInResponseDto;
 import com.jiraynor.boardback.dto.response.auth.SignUpResponseDto;
 import com.jiraynor.boardback.entity.UserEntity;
+import com.jiraynor.boardback.provider.JwtProvider;
 import com.jiraynor.boardback.repository.UserRepository;
 import com.jiraynor.boardback.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,8 @@ public class AuthServiceImplement implements AuthService {
 
     // 의존성 주입
     private final UserRepository userRepository;
+
+    private final JwtProvider jwtProvider;
 
     /**
      * PasswordEncoder
@@ -56,6 +61,32 @@ public class AuthServiceImplement implements AuthService {
             return ResponseDto.databaseError();
         }
         return SignUpResponseDto.success();
+    }
+
+    @Override
+    public ResponseEntity<? super SignInResponseDto> signIn(SignInRequestDto dto) {
+
+        String token = null;
+
+        try {
+            String email = dto.getEmail();
+            UserEntity userEntity = userRepository.findByEmail(email);
+
+            String password = dto.getPassword(); // 사용자가 입력한 비밀번호
+            String encodedPassword = userEntity.getPassword();  // 데이터베이스에 저장된 비밀번호
+            boolean isMatched = passwordEncoder.matches(password, encodedPassword);
+            if (!isMatched) return SignInResponseDto.signInFailed();
+
+            // 사용자 이메일로 JWT 토큰 생성
+            token = jwtProvider.create(email);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            ResponseDto.databaseError();
+        }
+
+        // 생성된 토큰을 가지고 성공 응답을 반환
+        return SignInResponseDto.success(token);
     }
 
 }
