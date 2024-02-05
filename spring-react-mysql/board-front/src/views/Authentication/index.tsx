@@ -1,8 +1,8 @@
 import './style.css';
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import InputBox from 'components/InputBox';
-import { SignInRequestDto } from 'apis/request/auth';
-import { signInRequest } from 'apis';
+import { SignInRequestDto, SignUpRequestDto } from 'apis/request/auth';
+import { signInRequest, signUpRequest } from 'apis';
 import SignInResponseDto from 'apis/response/auth/sign-in.response.dto';
 import { ResponseDto } from 'apis/response';
 import { useCookies } from 'react-cookie';
@@ -159,6 +159,7 @@ export default function Authentication() {
   };
 
   const SignUpCard = () => {
+    
     // 다음 주소 검색 팝업
     const open = useDaumPostcodePopup();
 
@@ -313,6 +314,33 @@ export default function Authentication() {
       setPage(2);
     };
 
+    const signUpResponse = (responseBody: SignInResponseDto | ResponseDto | null) => {
+      if (!responseBody) {
+        alert('네트워크 이상입니다.');
+        return;
+      }
+
+      const { code } = responseBody;
+      if (code === 'DE') {
+        setPage(1);
+        setEmailError(true);
+        setEmailErrorMessage('중복된 이메일 주소입니다.');
+      }
+      if (code === 'DN') {
+        setNicknameError(true);
+        setNicknameErrorMessage('중복된 닉네임입니다.');
+      }
+      if (code === 'DT') {
+        setTelNumberError(true);
+        setTelNumberErrorMessage('중복된 핸드폰 번호입니다.');
+      }
+      if (code === 'VF') alert('모든 값을 입력하세요.');
+      if (code === 'DBE') alert('데이터베이스 오류입니다.');
+      if (code !== 'SU') return;
+
+      setView('sign-in');
+    };
+
     // 회원가입 버튼 클릭 이벤트
     const onSignUpButtonClickHandler = () => {
       // 이메일 유효성 검사
@@ -376,6 +404,18 @@ export default function Authentication() {
       if (!agreedPersonal) setAgreedPersonalError(true);
 
       if (!hasNickname || !telNumberPattern || !hasAddress || !agreedPersonal) return;
+
+      const requestBody: SignUpRequestDto = {
+        email,
+        password,
+        nickname,
+        telNumber,
+        address,
+        addressDetail,
+        agreedPersonal,
+      };
+
+      signUpRequest(requestBody).then(signUpResponse);
     };
 
     // 로그인 페이지 이동
