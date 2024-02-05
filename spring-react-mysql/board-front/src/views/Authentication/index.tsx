@@ -8,6 +8,7 @@ import { ResponseDto } from 'apis/response';
 import { useCookies } from 'react-cookie';
 import { MAIN_PATH } from 'constant';
 import { useNavigate } from 'react-router-dom';
+import { Address, useDaumPostcodePopup } from 'react-daum-postcode';
 
 export default function Authentication() {
   const navigate = useNavigate();
@@ -158,6 +159,9 @@ export default function Authentication() {
   };
 
   const SignUpCard = () => {
+    // 다음 주소 검색 팝업
+    const open = useDaumPostcodePopup();
+
     const emailRef = useRef<HTMLInputElement | null>(null);
     const passwordRef = useRef<HTMLInputElement | null>(null);
     const passwordCheckRef = useRef<HTMLInputElement | null>(null);
@@ -174,13 +178,11 @@ export default function Authentication() {
     const [telNumber, setTelNumber] = useState<string>('');
     const [address, setAddress] = useState<string>('');
     const [addressDetail, setAddressDetail] = useState<string>('');
+    const [agreedPersonal, setAgreedPersonal] = useState<boolean>(false);
 
     // 비밀번호 타입 상태
     const [passwordType, setPasswordType] = useState<'text' | 'password'>('password');
     const [passwordCheckType, setPasswordCheckType] = useState<'text' | 'password'>('password');
-
-    // 개인 정보 동의 여부
-    const [agreedPersonal, setAgreedPersonal] = useState<boolean>(false);
 
     // 에러
     const [isEmailError, setEmailError] = useState<boolean>(false);
@@ -430,6 +432,21 @@ export default function Authentication() {
       onSignUpButtonClickHandler();
     };
 
+    // 주소 버튼 클릭 이벤트
+    const onAddressButtonClickHandler = () => {
+      open({ onComplete }); // onComplete 함수를 인자로 전달
+    };
+
+    // 다음 주소 검색 완료 이벤트 처리
+    const onComplete = (data: Address) => {
+      const { address } = data;
+      setAddress(address);
+      setAddressError(false);
+      setAddressErrorMessage('');
+      if (!addressDetailRef.current) return;
+      addressDetailRef.current.focus();
+    };
+
     useEffect(() => {
       if (page === 2) {
         if (!nicknameRef.current) return;
@@ -520,6 +537,7 @@ export default function Authentication() {
                   error={isAddressError}
                   message={addressErrorMessage}
                   icon='expand-right-light-icon'
+                  onButtonClick={onAddressButtonClickHandler}
                   onKeyDown={onAddressKeyDownHandler}
                 />
                 <InputBox
