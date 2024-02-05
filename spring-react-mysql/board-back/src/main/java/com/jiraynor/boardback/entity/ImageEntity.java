@@ -21,4 +21,10 @@ public class ImageEntity {
 
     @Column
     private String image;
+
+    // DTO → Entity
+    public ImageEntity(int boardNumber, String image) {
+        this.boardNumber = boardNumber;
+        this.image = image;
+    }
 }
