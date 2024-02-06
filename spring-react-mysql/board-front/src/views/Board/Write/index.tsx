@@ -1,12 +1,18 @@
+import { MAIN_PATH } from 'constant';
 import './style.css';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { useBoardStore } from 'stores';
+import { useNavigate } from 'react-router-dom';
+import { useBoardStore, useLoginUserStore } from 'stores';
 
 export default function Write() {
+  const navigate = useNavigate();
+
   const { title, setTitle } = useBoardStore();
   const { content, setContent } = useBoardStore();
   const { boardImageFileList, setBoardImageFileList } = useBoardStore();
   const { resetBoard } = useBoardStore();
+  const { loginUser } = useLoginUserStore();
+
   const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   const titleRef = useRef<HTMLTextAreaElement | null>(null);
@@ -75,6 +81,11 @@ export default function Write() {
   };
 
   useEffect(() => {
+    if (!loginUser) {
+      // 로그인하지 않은 사용자가 접속한 경우, 메인 페이지로 이동시킨다.
+      navigate(MAIN_PATH());
+      return;
+    }
     resetBoard();
   }, []);
 

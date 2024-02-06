@@ -1,5 +1,5 @@
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import './style.css';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   AUTH_PATH,
   BOARD_DETAIL_PATH,
@@ -13,6 +13,10 @@ import {
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useBoardStore, useLoginUserStore } from 'stores';
+import { fileUploadRequest, postBoardRequest } from 'apis';
+import { PostBoardRequestDto } from 'apis/request/board';
+import { PostBoardResponseDto } from 'apis/response/board';
+import { ResponseDto } from 'apis/response';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -153,7 +157,49 @@ export default function Header() {
   const UploadButton = () => {
     const { title, content, boardImageFileList, resetBoard } = useBoardStore();
 
-    const onUploadButtonClickHandler = () => {};
+    const postBoardResponse = (responseBody: PostBoardResponseDto | ResponseDto | null) => {
+      if (!responseBody) return;
+
+      // 응답 코드에 따른 처리
+      const { code } = responseBody;
+      if (code === 'DBE') alert('데이터베이스 오류입니다.');
+      if (code === 'AF' || code === 'NU') navigate(AUTH_PATH());
+      if (code === 'VF') alert('제목과 내용은 필수입니다.');
+      if (code !== 'SU') return;
+
+      // 게시판 상태 초기화
+      resetBoard();
+
+      if (!loginUser) return;
+      const { email } = loginUser;
+      navigate(USER_PATH(email));
+    };
+
+    // 게시글 업로드 버튼 클릭 이벤트
+    const onUploadButtonClickHandler = async () => {
+      const accessToken = cookies.accessToken;
+      if (!accessToken) return;
+
+      const boardImageList: string[] = [];
+
+      // 게시글 이미지 업로드
+      for (const file of boardImageFileList) {
+        const data = new FormData();
+        data.append('file', file);
+
+        const url = await fileUploadRequest(data);
+        if (url) boardImageList.push(url);
+      }
+
+      const requestBody: PostBoardRequestDto = {
+        title,
+        content,
+        boardImageList,
+      };
+
+      // 게시글 업로드 요청 API 호출
+      postBoardRequest(requestBody, accessToken).then(postBoardResponse);
+    };
 
     if (title && content) {
       return (
